@@ -58,7 +58,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 设置静态资源映射
+     * 设置静态资源映射,主要是访问接口文档（html，js，html）
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {

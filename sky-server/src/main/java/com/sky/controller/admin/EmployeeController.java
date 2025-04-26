@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
@@ -8,6 +9,8 @@ import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/employee")
 @Slf4j
+@Api(tags = "员工相关接口")
 public class EmployeeController {
 
     @Autowired
@@ -38,26 +42,29 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
+    @ApiOperation(value = "员工登录")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
         Employee employee = employeeService.login(employeeLoginDTO);
-
-        //登录成功后，生成jwt令牌
+        //登录成功后，生成jwt令牌，jwt令牌使用createjwt方法生成，其中的参数根据传过来的jwtproperties获取
+        //jwtproperteis则根据配置文件中的sky.jwt中的数据来获取数据
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
         String token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
                 claims);
-
+        //这里是一个新的对象类，这个类中将jwt令牌，用户名，密码，序号封装在一起，是用来builder创建对象
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
                 .userName(employee.getUsername())
                 .name(employee.getName())
                 .token(token)
                 .build();
-
+//这里是调用success方法再次封装成一个result对象，我们的result对象是统意传给前端使用的对象，其中在封装时我们会传入code属性，
+// 值为1表示封装成功，值为0或其他值表示未封装成功。传入data属性来表示我们的值的类型为object。
+// 还有一个方法时error表示封装失败的时候，之后我们会把data属性变成msg，里面的数据为失败的原因
         return Result.success(employeeLoginVO);
     }
 
@@ -67,8 +74,19 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/logout")
+    @ApiOperation("员工注销")
     public Result<String> logout() {
         return Result.success();
     }
 
+    //这是有关于新员工注册的控制器,路径在方法上面已经加过了
+    @PostMapping
+    //添加文档注解
+    @ApiOperation("新增员工")
+    public Result save(@RequestBody EmployeeDTO employeeDTO){
+        //添加日志信息，其中employDTO的信息胡自动输入到大括号中
+        log.info("新增员工，{}",employeeDTO);
+        employeeService.save(employeeDTO);
+        return null;
+    }
 }
