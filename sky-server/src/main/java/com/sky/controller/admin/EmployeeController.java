@@ -102,4 +102,19 @@ public class EmployeeController {
          PageResult pageResult=employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
+
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
+    //这里我们不需要泛型，对于非查询类，只需要返回code就可以，查询类需要返回数据，这时候在使用泛型
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用员工账号")
+    public Result starOrStop(@PathVariable Integer status,Long id){
+        log.info("启用禁用账号：{}，{}",status,id);
+        employeeService.startOrStop(status,id);
+        return Result.success();
+    }
 }
