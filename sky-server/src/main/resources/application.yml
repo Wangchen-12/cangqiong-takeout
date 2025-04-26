@@ -14,7 +14,7 @@ spring:
       password: ${sky.datasource.password}
 
 mybatis:
-  #mapper配置文件
+  #mapper配置文件,作用是扫描mapper对应的配置文件
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.sky.entity
   configuration:
