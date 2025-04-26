@@ -128,4 +128,21 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
         employeeMapper.update(employee);
     }
+
+    @Override
+    public Employee getById(Long id) {
+        Employee employee=employeeMapper.getById(id);
+        employee.setPassword("*****");
+        return employee;
+    }
+
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee=new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        //这里可以直接使用，因为在拦截器追踪已经设置好了id
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employee.setUpdateTime(LocalDateTime.now());
+        employeeMapper.update(employee);
+    }
 }

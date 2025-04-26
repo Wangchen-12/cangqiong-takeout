@@ -79,6 +79,12 @@ public class EmployeeController {
     }
 
     //这是有关于新员工注册的控制器,路径在方法上面已经加过了
+
+    /**
+     * 新增员工
+     * @param employeeDTO
+     * @return
+     */
     @PostMapping
     //添加文档注解
     @ApiOperation("新增员工")
@@ -116,5 +122,31 @@ public class EmployeeController {
         log.info("启用禁用账号：{}，{}",status,id);
         employeeService.startOrStop(status,id);
         return Result.success();
+    }
+
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工信息")
+    public Result<Employee> getById(@PathVariable Long id){
+        Employee employee=employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 修改员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO){
+        log.info("修改员工信息，{}",employeeDTO);
+        employeeService.update(employeeDTO);
+        return Result.success(employeeDTO);
     }
 }
